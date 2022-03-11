@@ -6,8 +6,8 @@ import time
 from models.file_entry import FileEntry
 from models.inventory_item import InventoryItem
 from models.config import Config
-from  models.position import Position
 from models.snapshot import Snapshot
+import cammera
 
 
 def _wake_cambot(s):
@@ -22,18 +22,17 @@ def _send_gcode(s, gCode):
     grbl_out = s.readline()  # Wait for grbl response with carriage return
     print(' : ' + (grbl_out.strip()).decode())
 
-def _take_snapshot(snapshot):
+def _take_snapshot(snapshot, base_directory):
     gcode = 'G00 X' + snapshot.position.a + ' Y' + snapshot.position.y + ' Z' + snapshot.position.b
     _send_gcode(gcode)
-    color_name, depth_name, size = _take_pictures(snapshot)
+    color_name, depth_name, size = _take_pictures(base_directory)
     depth_file = FileEntry('depth', None, 'image/jpeg', datetime.datetime.now())
     color_file = FileEntry('color', None, 'image/jpeg', datetime.datetime.now())
     files = [color_file, depth_file]
     return files, size
 
-def _take_pictures():
-
-
+def take_pictures(base_directory):
+    color_name, depth_name, size = cammera.take_images(base_directory)
     return color_name, depth_name, size
 
 def set_home(s):
@@ -50,22 +49,22 @@ class CambotHandler:
         self.active_config = None
 
 
-    def tick(self):
-        if self.state == 0:
-            self._idle()
-        if self.state == 1:
-            self._get_item()
-        if self.state == 2:
-            self._get_config()
-        if self.state == 3:
-           self._create_snapshot()
-        if self.state == 4:
-            # return Item
-        if self.state == 5:
-            # home
-        if self.state == 6:
-            #error
-
+    # def tick(self):
+    #     if self.state == 0:
+    #         self._idle()
+    #     if self.state == 1:
+    #         self._get_item()
+    #     if self.state == 2:
+    #         self._get_config()
+    #     if self.state == 3:
+    #        self._create_snapshot()
+    #     # return Item
+    #     if self.state == 4:
+    #     # home
+    #     if self.state == 5:
+    #     # error
+    #     if self.state == 6:
+    #         return
 # wait for new Item or snapshot
     def _idle(self):
         if len(self.manager.inventory.todo) > 0:
@@ -88,7 +87,7 @@ class CambotHandler:
         snapshotcount = len(self.active_item.snapshots)
         position = self.active_config.positions[snapshotcount]
         active_snapshot = Snapshot(datetime.datetime.now(),None,position,None,False)
-        files, size = _take_snapshot(active_snapshot)
+        files, size = _take_snapshot(active_snapshot, self.active_item.base_directory)
         active_snapshot.files = files
         active_snapshot.size = size
         if snapshotcount == len(self.active_config.positions):

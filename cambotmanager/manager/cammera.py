@@ -1,12 +1,16 @@
+import os.path
+
 import pyrealsense2 as rs
 import numpy as np
 import cv2
 from PIL import Image
 
 
-def take_images(base_directory):
-    color_name = base_directory + filestamp
-    depth_name = base_directory + filestamp
+def take_images(snapshot_parent_inventory_item):
+    color_name = snapshot_parent_inventory_item.base_directory + 'color_snapshot' \
+                 + len(snapshot_parent_inventory_item.snapshots) + '.jpeg'
+    depth_name = snapshot_parent_inventory_item.base_directory + 'depth_snapshot' \
+                 + len(snapshot_parent_inventory_item.snapshots) + '.jpeg'
     # Configure depth and color streams
     pipeline = rs.pipeline()
     config = rs.config()
@@ -46,30 +50,16 @@ def take_images(base_directory):
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
 
-        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-
-        depth_colormap_dim = depth_colormap.shape
-        color_colormap_dim = color_image.shape
-
-        # If depth and color resolutions are different, resize color image to match depth image for display
-        if depth_colormap_dim != color_colormap_dim:
-            resized_color_image = cv2.resize(color_image, dsize=(depth_colormap_dim[1], depth_colormap_dim[0]),
-                                             interpolation=cv2.INTER_AREA)
-            images = np.hstack((resized_color_image, depth_colormap))
-        else:
-            images = np.hstack((color_image, depth_colormap))
-
-        # Show images
-        img = Image.fromarray(color_image)
-        img.save('my.png')
+        # Save images
+        col_img = Image.fromarray(color_image)
+        dep_img = Image.fromarray(depth_image)
+        col_img.save(color_name)
+        dep_img.save(depth_name)
+        size = os.path.getsize(color_name) + os.path.getsize(depth_name)
         cv2.waitKey(1)
 
     finally:
 
         # Stop streaming
         pipeline.stop()
-        return
-
-
-
+        return color_name, depth_name, size

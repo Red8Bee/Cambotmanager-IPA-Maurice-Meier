@@ -58,27 +58,27 @@ def get_whole_inventory():
 
 
 @app.route('/inventory/<string:id_tag>', methods=['get'])
-def get_metadata_of_inventory():
+def get_metadata_of_inventory(id_tag):
     return
 
 
 @app.route('/inventory/<string:id_tag>', methods=['delete'])
-def delete_item():
+def delete_item(id_tag):
     return
 
 
 @app.route('/inventory/<string:id_tag>/zip', methods=['get'])
-def get_zip_of_item():
+def get_zip_of_item(id_tag):
     return
 
 
 @app.route('/inventory/<string:id_tag>', methods=['put'])
-def trigger_single_event():
+def trigger_single_event(id_tag):
     return
 
 
-@app.route('/inventory/<string:id_tag>/snapshot/<string:id_tag>', methods=['get'])
-def get_metadata_of_snapshot():
+@app.route('/inventory/<string:id_tag>/snapshot/<string:snapshot_time>', methods=['get'])
+def get_metadata_of_snapshot(id_tag, snapshot_time):
     return
 
 
