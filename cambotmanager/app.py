@@ -216,7 +216,25 @@ def trigger_single_event(id_tag):
 @app.route('/inventory/<string:id_tag>/snapshot/<string:snapshot_time>', methods=['get'])
 def get_metadata_of_snapshot(id_tag, snapshot_time):
     snapshot = manager.get_snapshot_from_item(id_tag, snapshot_time)
-    return
+    if snapshot == "id_invalid":
+        response = app.response_class(
+            response='bad input parameter',
+            status=400,
+            mimetype='application/json'
+        )
+    elif snapshot is None:
+        response = app.response_class(
+            response="Inventory ID not found",
+            status=401,
+            mimetype='application/json'
+        )
+    else:
+        response = app.response_class(
+            response=json.dumps(snapshot),
+            status=200,
+            mimetype='application/json'
+        )
+    return response
 
 
 if __name__ == '__main__':

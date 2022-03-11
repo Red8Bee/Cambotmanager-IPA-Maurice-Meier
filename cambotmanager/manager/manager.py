@@ -1,7 +1,7 @@
 import os.path
 import shutil
 
-# from cambot_handler import CambotHandler
+from manager.cambot_handler import CambotHandler
 from models.inventory import Inventory
 from models.inventory_item import InventoryItem
 from models.config import Config
@@ -87,18 +87,14 @@ class Manager:
             return None
         return 'id_invalid'
 
-
     def get_snapshot_from_item(self, id_tag, snapshot_time):
         item = self.get_inventory_item(id_tag)
-        for s in item.snapshots:
-            if s.time == snapshot_time:
-                return s
-        return None
-
-
-
-
-
+        if item != "id_invalid":
+            for s in item.snapshots:
+                if s.time == snapshot_time:
+                    return s
+            return None
+        return item
 
     # Config
     def create_config(self, json):
