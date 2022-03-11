@@ -11,6 +11,7 @@ def take_images(snapshot_parent_inventory_item):
                  + len(snapshot_parent_inventory_item.snapshots) + '.jpeg'
     depth_name = snapshot_parent_inventory_item.base_directory + 'depth_snapshot' \
                  + len(snapshot_parent_inventory_item.snapshots) + '.jpeg'
+
     # Configure depth and color streams
     pipeline = rs.pipeline()
     config = rs.config()
@@ -57,9 +58,14 @@ def take_images(snapshot_parent_inventory_item):
         dep_img.save(depth_name)
         size = os.path.getsize(color_name) + os.path.getsize(depth_name)
         cv2.waitKey(1)
+        return color_name, depth_name, size
 
     finally:
 
         # Stop streaming
         pipeline.stop()
-        return color_name, depth_name, size
+
+
+
+class Camera:
+    pass
