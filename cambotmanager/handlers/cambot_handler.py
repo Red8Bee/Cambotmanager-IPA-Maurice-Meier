@@ -12,7 +12,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 def _start_job(statemachine):
     sched = BackgroundScheduler(daemon=True)
-    sched.add_job(statemachine, 'interval', seconds=10)
+    sched.add_job(statemachine, 'interval', seconds=20)
     sched.start()
 
 

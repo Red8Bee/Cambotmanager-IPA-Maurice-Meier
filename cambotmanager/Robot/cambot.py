@@ -40,4 +40,4 @@ def take_pictures(base_directory):
 
 
 def set_home(s):
-    _send_gcode('$H')
+    _send_gcode(s, '$H')
