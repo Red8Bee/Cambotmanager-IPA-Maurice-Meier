@@ -4,3 +4,4 @@ class Position:
         self.a = a
         self.y = y
         self.b = b
+

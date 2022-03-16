@@ -1,4 +1,10 @@
+<<<<<<< Updated upstream
 from flask import Flask
+=======
+from flask import Flask, request
+from robot_manager.manager import Manager
+import json
+>>>>>>> Stashed changes
 
 app = Flask(__name__)
 
