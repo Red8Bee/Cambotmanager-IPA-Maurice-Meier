@@ -1,8 +1,3 @@
-<<<<<<< Updated upstream:cambotmanager/manager/manager.py
-from cambot_handler import CambotHandler
-from models.inventory import Inventory
-from storage_handler import StorageHandler
-=======
 import os.path
 import shutil
 
@@ -23,7 +18,6 @@ def create_folder(base_directory_path):
 def remove_folder(path):
     if os.path.exists(path):
         shutil.rmtree(path, ignore_errors=True)
->>>>>>> Stashed changes:cambotmanager/robot_manager/manager.py
 
 
 def check_if_id_is_UUID(id_to_check):
@@ -31,11 +25,10 @@ def check_if_id_is_UUID(id_to_check):
 
 
 class Manager:
-<<<<<<< Updated upstream:cambotmanager/manager/manager.py
     cambot_handler = CambotHandler()
     storage_handler = StorageHandler()
     inventory = Inventory()
-=======
+
     # This class handles the communication between robot/storage and API, serves data to the API
     def __init__(self):
         self.cambot_handler = CambotHandler(self)
@@ -49,7 +42,6 @@ class Manager:
 
     def check_storage(self):
         self.storage_handler.clean_inventory()
->>>>>>> Stashed changes:cambotmanager/robot_manager/manager.py
 
     # This class handles the communication between robot and API and serves data to the API
     # status
@@ -62,8 +54,6 @@ class Manager:
         status = "not implemented"
         self.check_storage()
         return status
-<<<<<<< Updated upstream:cambotmanager/manager/manager.py
-=======
 
     # Inventory
     def create_inventory_item(self, config: Config, id_tag):
@@ -178,4 +168,3 @@ class Manager:
                     return True
             return False
         return False
->>>>>>> Stashed changes:cambotmanager/robot_manager/manager.py
