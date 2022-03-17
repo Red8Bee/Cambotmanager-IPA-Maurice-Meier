@@ -21,13 +21,13 @@ def _send_gcode(s, gCode):
         return False, decoded
 
 
-def take_snapshot(position, base_directory, s):
+def take_snapshot(parent_item, position,  s):
     gcode = 'G00 X' + position.a + ' Y' + position.y + ' Z' + position.b
     worked, error = _send_gcode(s, gcode)
     if worked:
-        color_name, depth_name, size = take_pictures(base_directory)
-        depth_file = FileEntry('depth', depth_name, 'image/png', datetime.now())
-        color_file = FileEntry('color', color_name, 'image/png', datetime.now())
+        color_name, depth_name, size = take_pictures(parent_item)
+        depth_file = FileEntry('depth', depth_name, 'image/png', str(datetime.now()))
+        color_file = FileEntry('color', color_name, 'image/png', str(datetime.now()))
         files = [color_file, depth_file]
         return files, size
     else:
@@ -40,4 +40,5 @@ def take_pictures(base_directory):
 
 
 def set_home(s):
-    _send_gcode(s, '$H')
+    worked, status = _send_gcode(s, '$H')
+    return worked, status

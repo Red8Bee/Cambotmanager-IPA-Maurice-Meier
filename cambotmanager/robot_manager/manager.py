@@ -1,6 +1,8 @@
 import os.path
 import shutil
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 from handlers.cambot_handler import CambotHandler
 from handlers.storage_handler import StorageHandler
 from models.inventory import Inventory
@@ -13,6 +15,9 @@ from models.status import Status
 def create_folder(base_directory_path):
     if not (os.path.exists(base_directory_path)):
         os.mkdir(base_directory_path)
+    if os.path.exists(base_directory_path):
+        return True
+    return False
 
 
 def remove_folder(path):
@@ -25,9 +30,9 @@ def check_if_id_is_UUID(id_to_check):
 
 
 class Manager:
-    cambot_handler = CambotHandler()
-    storage_handler = StorageHandler()
     inventory = Inventory()
+    sched = BackgroundScheduler(daemon=True)
+    sched.start()
 
     # This class handles the communication between robot/storage and API, serves data to the API
     def __init__(self):
@@ -39,11 +44,19 @@ class Manager:
         self.storage_status_enum = ['all', 'scheduled_delete', 'stored', 'floating']
         self.robot_status = Status('idle', 200, 'ok', self.storage_handler.max_size - self.storage_handler.size,
                                    Position('home', 0, 0, 0))
+        self.cambot_handler = CambotHandler(self)
+        self.storage_handler = StorageHandler(self)
+        self.sched.add_job(self.cambot_handler.tick, 'interval', minutes=0.3, id='statemachine')
+
+    def stop_scheduler(self):
+        self.sched.remove_job('statemachine')
+
+    def restart_scheduler(self):
+        self.sched.add_job(self.cambot_handler.tick, 'interval', minutes=0.3, id='statemachine')
 
     def check_storage(self):
         self.storage_handler.clean_inventory()
 
-    # This class handles the communication between robot and API and serves data to the API
     # status
     def get_status(self):
         status = self.robot_status
@@ -57,12 +70,15 @@ class Manager:
 
     # Inventory
     def create_inventory_item(self, config: Config, id_tag):
-        base_directory = '../Inventory/' + id_tag
+        base_directory = './Inventory/' + id_tag
         item = InventoryItem(config, id_tag, base_directory)
-        create_folder(base_directory)
-        self.inventory.todo.append(item)
-        self.inventory.all_items.append(item)
-        self.check_storage()
+        folder_created = create_folder(base_directory)
+        if folder_created:
+            self.inventory.todo.append(item)
+            self.inventory.all_items.append(item)
+            self.check_storage()
+            return True
+        return False
 
     def get_whole_inventory(self, status, storage_status):
         params_are_ok = self.check_params(status, storage_status)
@@ -118,10 +134,23 @@ class Manager:
         self.check_storage()
         return item
 
+    def create_zip_from_item(self, id_tag):
+        item = self.get_inventory_item(id_tag)
+        # add metadata.ini
+        if type(item) is InventoryItem:
+            zip = shutil.make_archive(id_tag, 'zip', item.base_directory)
+            return zip
+        return None
+
     # Config
     def create_config(self, json):
         try:
-            config: Config = Config(json['name'], json['description'], json['type'], json['positions'],
+            positions = []
+            for s in json['positions']:
+                position = Position('config position', s['a'], s['y'], s['b'])
+                positions.append(position)
+
+            config: Config = Config(json['name'], json['description'], json['type'], positions,
                                     json['defaultMaxProgress'])
             self.configs.append(config)
             self.check_storage()
@@ -157,12 +186,14 @@ class Manager:
     def check_params(self, status, storage_status):
         if status is '' and storage_status is '':
             return True
-        elif status is '':
+        if status is None and storage_status is None:
+            return True
+        elif status is '' or status is None:
             for s in self.storage_status_enum:
                 if s == storage_status:
                     return True
             return False
-        elif storage_status is '':
+        elif storage_status is '' or storage_status is None:
             for s in self.status_enum:
                 if s == status:
                     return True
