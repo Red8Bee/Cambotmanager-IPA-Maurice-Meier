@@ -1,0 +1,70 @@
+.container {
+  display: grid;
+  grid-template-rows: 0.3fr 1.7fr;
+  grid-auto-columns: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 0.5fr 1.5fr 1.5fr 0.5fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas: ". left right .";
+  grid-area: 2 / 1 / 3 / 2;
+}
+
+.left {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0.7fr 0.7fr 1.6fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "status"
+    "reset"
+    ".";
+  grid-area: left;
+}
+
+.status {
+  grid-area: status;
+}
+
+.reset {
+  grid-area: reset;
+}
+
+.right {
+  grid-area: right;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 0.5fr 2fr 0.5fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas: ". title .";
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.title {
+  grid-area: title;
+}
+
+.reset_btn {
+  width: 5cm;
+  height: 2cm;
+}
+
+.inventory_item {
+  margin: 10px;
+}
+
+.inventory_boarder {
+  border-style: solid;
+  border-color: black;
+}

@@ -1,16 +1,21 @@
 import flask
-from flask import Flask, request
+from flask import Flask, request, render_template
+from flask_cors import CORS
 from robot_manager.manager import Manager
 import json
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='',
+            static_folder='web/static',
+            template_folder='web/templates')
+CORS(app)
 manager = Manager()
 
 
 @app.route('/')
 def hello_world():  # put application's code here
     # Return UI
-    return 'Hello World!'
+    return render_template('index.html')
 
 
 # /status
