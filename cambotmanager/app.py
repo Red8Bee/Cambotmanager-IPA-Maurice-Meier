@@ -18,7 +18,7 @@ def hello_world():  # put application's code here
 def get_status():
     status = manager.get_status()
     response = app.response_class(
-        response=json.dumps(status),
+        response=status.toJSON(),
         status=200,
         mimetype='application/json'
     )
