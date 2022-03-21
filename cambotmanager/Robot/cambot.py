@@ -1,4 +1,5 @@
-from Robot.camera import take_images
+# from Robot.camera import take_images
+from Robot.cam_nopyrealsense import take_images
 from datetime import datetime, time
 
 from models.file_entry import FileEntry
@@ -21,7 +22,7 @@ def _send_gcode(s, gCode):
         return False, decoded
 
 
-def take_snapshot(parent_item, position,  s):
+def take_snapshot(parent_item, position, s):
     gcode = 'G00 X' + position.a + ' Y' + position.y + ' Z' + position.b
     worked, error = _send_gcode(s, gcode)
     if worked:

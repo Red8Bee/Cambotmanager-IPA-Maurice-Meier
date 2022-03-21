@@ -10,6 +10,6 @@ class Config:
         self.default_max_progress = default_max_progress
         self.is_in_use = False
 
-    def toJSON(self):
+    def toJSON(self)
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)

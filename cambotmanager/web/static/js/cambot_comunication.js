@@ -1,3 +1,5 @@
+const base_url = 'cambot/'
+
 function on_page_loaded(){
     get_status();
     get_items();
@@ -15,7 +17,7 @@ function reset_click(){
 async function reset_cambot() {
 
     const request = new XMLHttpRequest();
-    const url = "http://127.0.0.1:5000/status/reset";
+    const url = base_url + "status/reset";
    request.open("POST", url)
    request.send();
    request.onload = () => {
@@ -31,7 +33,7 @@ async function reset_cambot() {
 
 async function get_status() {
     const request = new XMLHttpRequest();
-    const url = "http://127.0.0.1:5000/status";
+    const url = base_url + "status";
    request.open("GET", url)
    request.send();
    request.onload = () => {
@@ -47,7 +49,7 @@ async function get_status() {
 
 async function get_items(){
     const request = new XMLHttpRequest();
-    const url = "http://127.0.0.1:5000/inventory";
+    const url = base_url + "inventory";
    request.open("GET", url)
    request.send();
    request.onload = () => {
@@ -71,7 +73,6 @@ async function get_items(){
 }
 
 async function download_item(id_tag){
-    const request = new XMLHttpRequest();
-    const url = "http://127.0.0.1:5000/inventory/"+id_tag+"/zip";
+    const url = base_url + "inventory/"+id_tag+"/zip";
     window.open(url);
 }
