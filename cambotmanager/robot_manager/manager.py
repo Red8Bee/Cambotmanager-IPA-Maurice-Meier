@@ -42,7 +42,8 @@ class Manager:
         self.configs = []
         self.status_enum = ['success', 'fail', 'in_progress', 'in_queue']
         self.storage_status_enum = ['all', 'scheduled_delete', 'stored', 'floating']
-        self.status = Status('idle', 200, 'ok', self.storage_handler.max_size - self.storage_handler.size,)
+        self.status = Status('idle', 200, 'ok', self.storage_handler.max_size - self.storage_handler.size,
+                             Position("home", 0, 0, 0))
         self.sched.add_job(self.cambot_handler.tick, 'interval', minutes=0.3, id='statemachine')
 
     def stop_scheduler(self):

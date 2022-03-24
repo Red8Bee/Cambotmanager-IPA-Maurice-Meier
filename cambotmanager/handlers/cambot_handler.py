@@ -45,6 +45,7 @@ class CambotHandler:
         self.active_item = self.manager.inventory.todo[0]
         if type(self.active_item) == InventoryItem and self.active_item.status == 'in_queue':
             self.active_item.storage_status = 'in_progress'
+            self.active_item.start_date = datetime.datetime.now()
             self.manager.robot_status = 'busy'
             self.active_config = self.active_item.config
             self.active_config.is_in_use = True
@@ -67,6 +68,7 @@ class CambotHandler:
     def _return_item(self):
         self.manager.inventory.done.append(self.active_item)
         self.manager.inventory.todo.remove(self.active_item)
+        self.active_item.end_date = datetime.datetime.now()
         self.state = 4
 
     def _home(self):
