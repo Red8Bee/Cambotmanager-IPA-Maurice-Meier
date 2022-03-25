@@ -4,8 +4,9 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2
 from PIL import Image
-import time
 
+
+# this is the Camera implementation mit pyrealsense2. nicht funktional!
 def take_images(snapshot_parent_inventory_item):
     color_name = snapshot_parent_inventory_item.base_directory + '/color_snapshot' \
                  + str(len(snapshot_parent_inventory_item.snapshots)) + '.png'
