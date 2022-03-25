@@ -27,8 +27,8 @@ def _send_gcode(s, gCode):
             return True, 'success'
 
 
-
 # checking if coordinates are inside bounds X max:27 min:0 Y max:300 min:1 Z max0 min0
+# swap values if Robot configuration gets edited
 def _check_bounds(x, y, z):
     if x > 27:
         x = 27
@@ -45,7 +45,7 @@ def _check_bounds(x, y, z):
     return x, y, z
 
 
-# Code for camara with pyrealsense2
+# # Code for camara with pyrealsense2
 # def take_snapshot(parent_item, position, s):
 #     gcode = 'G00 X' + position.a + ' Y' + position.y + ' Z' + position.b
 #     worked, error = _send_gcode(s, gcode)
@@ -67,17 +67,12 @@ def take_snapshot(parent_item, position, s):
     gcode = 'G00 X' + str(checked_x) + ' Y' + str(checked_y) + ' Z' + str(checked_z)
     worked, error = _send_gcode(s, gcode)
     if worked:
-        name = take_pictures(parent_item)
+        name = take_images(parent_item)
         size = os.path.getsize(name)
         file = FileEntry('color', name, 'image/png', str(datetime.now()))
         return file, size, 'ok'
     else:
         return worked, error
-
-
-def take_pictures(parent_item):
-    name = take_images(parent_item)
-    return name
 
 
 def set_home(s):
@@ -88,4 +83,3 @@ def set_home(s):
         return True, 'success'
     else:
         return False, 'error'
-

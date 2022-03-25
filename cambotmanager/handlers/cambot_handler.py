@@ -22,14 +22,14 @@ def _add_metadata_file(item):
         string = 'A: ' + str(position.a) + ',Y: ' + str(position.y) + ',B: ' + str(position.b)
         position_string = position_string + ';' + string
     f = open(whole_path, 'w')
-    f.write("Status: " + item.status + '\n'+ "Positions:" + position_string)
+    f.write("Status: " + item.status + '\n' + "Positions:" + position_string)
     f.close()
 
 
 class CambotHandler:
     def __init__(self, manager):
         self.s = serial.Serial('COM6', 115200)  # GRBL operates at 115200 baud. Leave that part alone.
-        self.state = 0
+        self.state = 0  # initial state
         self.manager = manager
         self.active_item = None
         self.active_config = None
@@ -82,7 +82,7 @@ class CambotHandler:
             self.manager.restart_scheduler()
             self.state = 0
 
-        # return item
+        # return item to manager and mark as done
 
     def _return_item(self):
         self.manager.inventory.done.append(self.active_item)

@@ -1,8 +1,6 @@
 import os.path
 import shutil
-
 from apscheduler.schedulers.background import BackgroundScheduler
-
 from handlers.cambot_handler import CambotHandler
 from handlers.storage_handler import StorageHandler
 from models.inventory import Inventory
@@ -13,6 +11,7 @@ from models.status import Status
 from datetime import datetime
 
 
+# Static methods
 def create_folder(item):
     iso_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     directory = item.base_directory
@@ -36,12 +35,12 @@ def check_if_id_is_UUID(id_to_check):
     return True
 
 
+# This class handles the communication between robot/storage and API, serves data to the API
 class Manager:
     inventory = Inventory()
     sched = BackgroundScheduler(daemon=True)
     sched.start()
 
-    # This class handles the communication between robot/storage and API, serves data to the API
     def __init__(self):
         self.cambot_handler = CambotHandler(self)
         self.storage_handler = StorageHandler(self)
@@ -52,15 +51,6 @@ class Manager:
         self.status = Status('idle', 200, 'ok', self.storage_handler.max_size - self.storage_handler.size,
                              Position("home", 0, 0, 0))
         self.sched.add_job(self.cambot_handler.tick, 'interval', minutes=0.3, id='statemachine')
-
-    def stop_scheduler(self):
-        self.sched.pause_job('statemachine')
-
-    def restart_scheduler(self):
-        self.sched.resume_job('statemachine')
-
-    def check_storage(self):
-        self.storage_handler.clean_inventory()
 
     # status
     def get_status(self):
@@ -204,3 +194,12 @@ class Manager:
                     return True
             return False
         return False
+
+    def stop_scheduler(self):
+        self.sched.pause_job('statemachine')
+
+    def restart_scheduler(self):
+        self.sched.resume_job('statemachine')
+
+    def check_storage(self):
+        self.storage_handler.clean_inventory()
