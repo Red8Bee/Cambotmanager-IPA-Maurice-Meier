@@ -11,12 +11,15 @@ Nachdem sie alles Installiert und sich angemeldet haben, sollten sie sich auf de
 Hier klicken sie auf "Access List" und dann auf "Add Access List"
 **Details**
 hier setzen sie einen Namen z.B. "Cambot Access" akktivierne sie "Satisfy Any"
+
 ![enter image description here](https://raw.githubusercontent.com/Red8Bee/Cambotmanager-IPA-Maurice-Meier/main/images/ProxyManager%20AccessDetails.png)
 **Authorization**
 Hier können sie Benutzer erstellen welche auf die API und das UI zugreiffen dürfen.
+
 ![enter image description here](https://raw.githubusercontent.com/Red8Bee/Cambotmanager-IPA-Maurice-Meier/main/images/ProxyManager%20AccessAuth.png)
 **Access**
 Hier werden die autorisierten IP Adressen aufgelistet.
+
 ![enter image description here](https://raw.githubusercontent.com/Red8Bee/Cambotmanager-IPA-Maurice-Meier/main/images/ProxyManager%20AccessAcess.png)
 
 Danach erstellen sie einen Proxy Host. mit folgenden Angaben.
@@ -24,6 +27,7 @@ Domain Names: cambot
 IP: IP des Raspberry Pi's
 Forward Port: 5000
 Access List: die gerade erstellte liste auswählen.
+
 ![enter image description here](https://raw.githubusercontent.com/Red8Bee/Cambotmanager-IPA-Maurice-Meier/main/images/Proxymanager%20proxyhost.png)
 
 
