@@ -1,5 +1,5 @@
-# this class watches the disc and reserves space for new storage Items
-import datetime
+# this class watches the disc and reserves space for new storage Item
+from  datetime import  datetime
 
 
 class StorageHandler:
@@ -11,14 +11,14 @@ class StorageHandler:
 
     def clean_inventory(self):
         for item in self.manager.inventory.all_items:
-            if item.store_days_left > 0:
+            if item.store_days_left <= 0:
                 item.storage_status = 'scheduled_delete'
-            else:
-                now = datetime.datetime.now()
-                difrence = now - item.end_date
-                days = difrence.days
-                item.store_days_left = 30 - days
-
+            elif item.status != 'in_queue':
+                if item.status != 'in_progress':
+                    now = datetime.now()
+                    difference = now - item.end_date
+                    days = difference.days
+                    item.store_days_left = 30 - days
             if item.storage_status == 'scheduled_delete':
                 self.manager.delete_inventory_item(item.id_tag)
 

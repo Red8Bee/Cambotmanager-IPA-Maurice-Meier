@@ -8,16 +8,30 @@ from models.inventory_item import InventoryItem
 from models.config import Config
 from models.position import Position
 from models.snapshot import Snapshot
+from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
+
+
+def _add_metadata_file(item):
+    directory = item.base_directory
+    iso_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    file_name = item.id_tag + '---snapshots---' + iso_timestamp + '---metadata.ini'
+    whole_path = directory + file_name
+    f = open(whole_path, 'w')
+    f.write("Status: " + item.status + '\n Positions' + item.config.positions)
+    f.close()
 
 
 class CambotHandler:
     def __init__(self, manager):
-        # self.s = serial.Serial('COM6', 115200)  # GRBL operates at 115200 baud. Leave that part alone.
+        self.s = serial.Serial('COM6', 115200)  # GRBL operates at 115200 baud. Leave that part alone.
         self.state = 0
         self.manager = manager
         self.active_item = None
         self.active_config = None
+
+    def reset(self):
+        cambot.set_home(self.s)
 
     def tick(self):
         print('tick')
@@ -45,7 +59,7 @@ class CambotHandler:
         self.active_item = self.manager.inventory.todo[0]
         if type(self.active_item) == InventoryItem and self.active_item.status == 'in_queue':
             self.active_item.storage_status = 'in_progress'
-            self.active_item.start_date = datetime.datetime.now()
+            self.active_item.start_date = datetime.now()
             self.manager.robot_status = 'busy'
             self.active_config = self.active_item.config
             self.active_config.is_in_use = True
@@ -68,30 +82,32 @@ class CambotHandler:
     def _return_item(self):
         self.manager.inventory.done.append(self.active_item)
         self.manager.inventory.todo.remove(self.active_item)
-        self.active_item.end_date = datetime.datetime.now()
+        self.active_item.end_date = datetime.now()
+        _add_metadata_file(self.active_item)
         self.state = 4
 
     def _home(self):
-        # cambot.set_home(self.s)
-        test_cambot.set_home()
+        cambot.set_home(self.s)
+        # test_cambot.set_home()
         self.manager.restart_scheduler()
         self.state = 0
 
     # helpers
     def _take_all_snapshots(self):
-        # cambot.wake_cambot(self.s)
-        # cambot.set_home(self.s)
-        test_cambot.wake_cambot()
-        worked, status = test_cambot.set_home()
+        cambot.wake_cambot(self.s)
+        worked, status = cambot.set_home(self.s)
+        # test_cambot.wake_cambot()
+        # worked, status = test_cambot.set_home()
         snapshot_count = 0
         all_positions = self.active_config.positions
         if worked:
             while True:
                 position = all_positions[snapshot_count]
-                files, size, status = test_cambot.take_snapshot(self.active_item)
-                if status != 'success':
+                # files, size, status = test_cambot.take_snapshot(self.active_item)
+                files, size, status = cambot.take_snapshot(self.active_item, position, self.s)
+                if status == 'success':
                     is_last_snapshot = self._check_if_last(position)
-                    snapshot = Snapshot(datetime.datetime.now(), files, position, size, is_last_snapshot)
+                    snapshot = Snapshot(datetime.now(), files, position, size, is_last_snapshot)
                     self.active_item.snapshots.append(snapshot)
                     snapshot_count = snapshot_count + 1
                 else:

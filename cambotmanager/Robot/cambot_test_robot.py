@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 # from Robot.camera import take_images
@@ -11,7 +12,8 @@ def wake_cambot():
 
 
 def take_snapshot(parent_item):
-    name, size = take_images(parent_item)
+    name = take_images(parent_item)
+    size = os.path.getsize(name)
     file = FileEntry('snapshot', name, 'image/png', str(datetime.now()))
     return file, size, 'ok'
 

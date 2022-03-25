@@ -11,6 +11,7 @@ class InventoryItem:
         self.config = config
         self.snapshots = []
         self.base_directory = base_directory
+        self.image_directory = None
         self.store_days_left = 30
 
     def toJSON(self):

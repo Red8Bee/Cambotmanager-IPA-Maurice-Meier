@@ -10,12 +10,19 @@ from models.inventory_item import InventoryItem
 from models.config import Config
 from models.position import Position
 from models.status import Status
+from datetime import datetime
 
 
-def create_folder(base_directory_path):
-    if not (os.path.exists(base_directory_path)):
-        os.mkdir(base_directory_path)
-    if os.path.exists(base_directory_path):
+def create_folder(item):
+    iso_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    directory = item.base_directory
+    folder_name = item.id_tag + '---snapshots---' + iso_timestamp + '---images'
+    whole_path = directory + '/' + folder_name
+    if not (os.path.exists(directory)):
+        os.mkdir(directory)
+        os.mkdir(whole_path)
+    if os.path.exists(directory):
+        item.image_directory = folder_name
         return True
     return False
 
@@ -47,10 +54,10 @@ class Manager:
         self.sched.add_job(self.cambot_handler.tick, 'interval', minutes=0.3, id='statemachine')
 
     def stop_scheduler(self):
-        self.sched.remove_job('statemachine')
+        self.sched.pause_job('statemachine')
 
     def restart_scheduler(self):
-        self.sched.add_job(self.cambot_handler.tick, 'interval', minutes=0.3, id='statemachine')
+        self.sched.resume_job('statemachine')
 
     def check_storage(self):
         self.storage_handler.clean_inventory()
@@ -62,20 +69,20 @@ class Manager:
         return status
 
     def reset_cambot(self):
-        status = "not implemented"
-        self.check_storage()
-        return status
+        self.cambot_handler.reset()
 
     # Inventory
     def create_inventory_item(self, config: Config, id_tag):
         base_directory = './Inventory/' + id_tag
         item = InventoryItem(config, id_tag, base_directory)
-        folder_created = create_folder(base_directory)
+        folder_created = create_folder(item)
         if folder_created:
             self.inventory.todo.append(item)
             self.inventory.all_items.append(item)
             self.check_storage()
             return True
+        else:
+            self.status.robot_status = 'failed'
         return False
 
     def get_whole_inventory(self, status, storage_status):
