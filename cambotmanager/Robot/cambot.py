@@ -18,19 +18,17 @@ def _send_gcode(s, gCode):
     l = gCode.strip()  # Strip all EOL characters for consistency
     print(l)
     s.write((l + '\n').encode())  # Send g-code block to grbl
-    # false_line = s.readline()  # Wait for grbl response with carriage return
-    # s.write(('G00'+ '\n').encode())  # Send g-code block to grbl
-    grbl_out = s.readline()  # Wait for grbl response with carriage return
-    print(grbl_out)
-    decoded = grbl_out.decode('utf-8')
-    if decoded == 'ok\r\n':
-        return True, 'success'
-    else:
-        return False, decoded
-
-    # checking if coordinates are inside bounds X max:27 min:0 Y max:300 min:1 Z max0 min0
+    while True:
+        s.write('$G\n'.encode())
+        grbl_out = s.readline()  # Wait for grbl response with carriage return
+        decoded = grbl_out.decode('utf-8')
+        print(decoded)
+        if decoded == '[GC:G0 G54 G17 G21 G90 G94 M5 M9 T0 F0]\r\n':
+            return True, 'success'
 
 
+
+# checking if coordinates are inside bounds X max:27 min:0 Y max:300 min:1 Z max0 min0
 def _check_bounds(x, y, z):
     if x > 27:
         x = 27
@@ -47,6 +45,7 @@ def _check_bounds(x, y, z):
     return x, y, z
 
 
+# Code for camara with pyrealsense2
 # def take_snapshot(parent_item, position, s):
 #     gcode = 'G00 X' + position.a + ' Y' + position.y + ' Z' + position.b
 #     worked, error = _send_gcode(s, gcode)
@@ -67,7 +66,6 @@ def take_snapshot(parent_item, position, s):
     checked_x, checked_y, checked_z = _check_bounds(x, y, z)
     gcode = 'G00 X' + str(checked_x) + ' Y' + str(checked_y) + ' Z' + str(checked_z)
     worked, error = _send_gcode(s, gcode)
-    time.sleep(10)
     if worked:
         name = take_pictures(parent_item)
         size = os.path.getsize(name)
@@ -83,5 +81,11 @@ def take_pictures(parent_item):
 
 
 def set_home(s):
-    worked, status = _send_gcode(s, '$H')
-    return worked, status
+    s.write(('$H' + '\n').encode())  # Send g-code block to grbl
+    grbl_out = s.readline()  # Wait for grbl response with carriage return
+    decoded = grbl_out.decode('utf-8')
+    if decoded == 'ok\r\n':
+        return True, 'success'
+    else:
+        return False, 'error'
+

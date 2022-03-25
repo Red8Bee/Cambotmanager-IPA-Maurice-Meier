@@ -16,9 +16,13 @@ def _add_metadata_file(item):
     directory = item.base_directory
     iso_timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     file_name = item.id_tag + '---snapshots---' + iso_timestamp + '---metadata.ini'
-    whole_path = directory + file_name
+    whole_path = directory + '/' + file_name
+    position_string = ''
+    for position in item.config.positions:
+        string = 'A: ' + str(position.a) + ',Y: ' + str(position.y) + ',B: ' + str(position.b)
+        position_string = position_string + ';' + string
     f = open(whole_path, 'w')
-    f.write("Status: " + item.status + '\n Positions' + item.config.positions)
+    f.write("Status: " + item.status + '\n'+ "Positions:" + position_string)
     f.close()
 
 
@@ -32,6 +36,7 @@ class CambotHandler:
 
     def reset(self):
         cambot.set_home(self.s)
+        # test_cambot.set_home()
 
     def tick(self):
         print('tick')
@@ -105,7 +110,7 @@ class CambotHandler:
                 position = all_positions[snapshot_count]
                 # files, size, status = test_cambot.take_snapshot(self.active_item)
                 files, size, status = cambot.take_snapshot(self.active_item, position, self.s)
-                if status == 'success':
+                if status == 'ok':
                     is_last_snapshot = self._check_if_last(position)
                     snapshot = Snapshot(datetime.now(), files, position, size, is_last_snapshot)
                     self.active_item.snapshots.append(snapshot)

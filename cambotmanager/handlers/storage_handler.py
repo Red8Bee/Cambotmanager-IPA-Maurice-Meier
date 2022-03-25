@@ -15,10 +15,11 @@ class StorageHandler:
                 item.storage_status = 'scheduled_delete'
             elif item.status != 'in_queue':
                 if item.status != 'in_progress':
-                    now = datetime.now()
-                    difference = now - item.end_date
-                    days = difference.days
-                    item.store_days_left = 30 - days
+                    if item.end_date is not None:
+                        now = datetime.now()
+                        difference = now - item.end_date
+                        days = difference.days
+                        item.store_days_left = 30 - days
             if item.storage_status == 'scheduled_delete':
                 self.manager.delete_inventory_item(item.id_tag)
 

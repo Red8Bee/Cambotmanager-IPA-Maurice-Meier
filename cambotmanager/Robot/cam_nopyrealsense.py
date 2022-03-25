@@ -1,6 +1,5 @@
-import os
+import time
 import cv2
-from PIL.Image import Image
 from datetime import datetime
 
 
@@ -11,5 +10,7 @@ def take_images(snapshot_parent_inventory_item):
     whole_path = path + name
     s, img = cam.read()
     if s:
+        time.sleep(2)
         cv2.imwrite(whole_path, img)
+        time.sleep(2)
         return whole_path

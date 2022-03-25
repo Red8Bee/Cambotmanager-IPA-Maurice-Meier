@@ -4,7 +4,7 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2
 from PIL import Image
-
+import time
 
 def take_images(snapshot_parent_inventory_item):
     color_name = snapshot_parent_inventory_item.base_directory + '/color_snapshot' \
