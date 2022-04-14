@@ -38,8 +38,8 @@ def _check_bounds(x, y, z):
         y = 300
     if y < 1:
         y = 1
-    if z > 0:
-        z = 0
+    if z > 33:
+        z = 33
     if z < 0:
         z = 0
     return x, y, z

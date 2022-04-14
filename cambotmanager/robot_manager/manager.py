@@ -18,9 +18,9 @@ def create_folder(item):
     folder_name = item.id_tag + '---snapshots---' + iso_timestamp + '---images'
     whole_path = directory + '/' + folder_name
     if not (os.path.exists(directory)):
-        os.mkdir(directory)
-        os.mkdir(whole_path)
+        os.makedirs(directory)
     if os.path.exists(directory):
+        os.makedirs(whole_path)
         item.image_directory = folder_name
         return True
     return False
@@ -62,7 +62,7 @@ class Manager:
         self.cambot_handler.reset()
 
     # Inventory
-    def lscreate_inventory_item(self, config: Config, id_tag):
+    def create_inventory_item(self, config: Config, id_tag):
         base_directory = './Inventory/' + id_tag
         item = InventoryItem(config, id_tag, base_directory)
         folder_created = create_folder(item)
