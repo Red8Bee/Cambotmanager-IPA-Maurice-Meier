@@ -62,7 +62,7 @@ class Manager:
         self.cambot_handler.reset()
 
     # Inventory
-    def create_inventory_item(self, config: Config, id_tag):
+    def lscreate_inventory_item(self, config: Config, id_tag):
         base_directory = './Inventory/' + id_tag
         item = InventoryItem(config, id_tag, base_directory)
         folder_created = create_folder(item)

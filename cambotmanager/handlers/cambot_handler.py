@@ -28,15 +28,15 @@ def _add_metadata_file(item):
 
 class CambotHandler:
     def __init__(self, manager):
-        # self.s = serial.Serial('COM6', 115200)  # GRBL operates at 115200 baud. Leave that part alone.
+        self.s = serial.Serial('/dev/ttyUSB0', 115200)  # GRBL operates at 115200 baud. Leave that part alone.
         self.state = 0  # initial state
         self.manager = manager
         self.active_item = None
         self.active_config = None
 
     def reset(self):
-        # cambot.set_home(self.s)
-        test_cambot.set_home()
+        cambot.set_home(self.s)
+        # test_cambot.set_home()
 
     def tick(self):
         print('tick')
@@ -92,24 +92,24 @@ class CambotHandler:
         self.state = 4
 
     def _home(self):
-        # cambot.set_home(self.s)
-        test_cambot.set_home()
+        cambot.set_home(self.s)
+        # test_cambot.set_home()
         self.manager.restart_scheduler()
         self.state = 0
 
     # helpers
     def _take_all_snapshots(self):
-        # cambot.wake_cambot(self.s)
-        # worked, status = cambot.set_home(self.s)
-        test_cambot.wake_cambot()
-        worked, status = test_cambot.set_home()
+        cambot.wake_cambot(self.s)
+        worked, status = cambot.set_home(self.s)
+        # test_cambot.wake_cambot()
+        # worked, status = test_cambot.set_home()
         snapshot_count = 0
         all_positions = self.active_config.positions
         if worked:
             while True:
                 position = all_positions[snapshot_count]
-                files, size, status = test_cambot.take_snapshot(self.active_item)
-                # files, size, status = cambot.take_snapshot(self.active_item, position, self.s)
+                # files, size, status = test_cambot.take_snapshot(self.active_item)
+                files, size, status = cambot.take_snapshot(self.active_item, position, self.s)
                 if status == 'ok':
                     is_last_snapshot = self._check_if_last(position)
                     snapshot = Snapshot(datetime.now(), files, position, size, is_last_snapshot)
